@@ -2,10 +2,12 @@ import express from 'express';
 import AstraCollectionHelper from './helpers/AstraCollectionHelper.js'
 import FileContentChunkingHelper from './helpers/FileContentChunkingHelper.js'
 import ChatHelper from './helpers/ChatHelper.js'
+import multer from 'multer';
 
 const router = express.Router();
+const upload = multer({ dest: 'uploads/' });
 
-router.post("/upload", async function (req, res) {
+router.post("/upload", upload.single('file') , async function (req, res) {
     await AstraCollectionHelper.createCollection();
     const fileStoreInAstraResponse = await FileContentChunkingHelper.processAndStoreFile(req.file?.path);
     res.status(fileStoreInAstraResponse.status).json({ "message": fileStoreInAstraResponse.message })
